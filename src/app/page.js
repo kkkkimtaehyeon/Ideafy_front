@@ -2,12 +2,11 @@
 
 import Header from "@/components/Header";
 import IdeaCard from "@/components/IdeaCard";
-import {useEffect, useState} from "react";
+import {useEffect, useState, Suspense} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
 import api from "@/app/common/api-axios";
 
-
-export default function Home() {
+function IdeasContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [ideas, setIdeas] = useState();
@@ -56,10 +55,7 @@ export default function Home() {
     }, [currentPage, selectedCategory]);
 
     return (
-        <div className="flex min-h-screen w-full flex-col">
-            <Header/>
-            <main className="w-full flex-1">
-                <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+        <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
                     <div className="mb-8">
                         <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Explore
                             Ideas</h1>
@@ -149,6 +145,24 @@ export default function Home() {
                         </button>
                     </div>
                 </div>
+    );
+}
+
+export default function Home() {
+    return (
+        <div className="flex min-h-screen w-full flex-col">
+            <Header/>
+            <main className="w-full flex-1">
+                <Suspense fallback={
+                    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+                        <div className="text-center py-12">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                            <p className="mt-4 text-slate-600 dark:text-slate-400">Loading...</p>
+                        </div>
+                    </div>
+                }>
+                    <IdeasContent />
+                </Suspense>
             </main>
         </div>
     );
