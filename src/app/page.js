@@ -1,103 +1,155 @@
-import Image from "next/image";
+"use client";
+
+import Header from "@/components/Header";
+import IdeaCard from "@/components/IdeaCard";
+import {useEffect, useState} from "react";
+import {useRouter, useSearchParams} from "next/navigation";
+import api from "@/app/common/api-axios";
+
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [ideas, setIdeas] = useState();
+    const [categories, setCategories] = useState();
+    const [pagination, setPagination] = useState();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    const currentPage = parseInt(searchParams.get('page')) || 0;
+    const selectedCategory = searchParams.get('category') || 'All';
+
+    const getCategories = () => {
+        api.get("/idea-categories")
+            .then(res => {
+                setCategories(res.data);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
+    const getIdeas = (page = 0, category = 'All') => {
+        let url = `/ideas?page=${page}&size=16`;
+        if (category && category !== 'All') {
+            url += `&category=${encodeURIComponent(category.toUpperCase())}`;
+        }
+
+        api.get(url)
+            .then(res => {
+                const pageData = res.data;
+                setIdeas(pageData.content);
+                const paginationData = {
+                    totalPages: pageData.totalPages,
+                    currentPage: pageData.number,
+                    totalElements: pageData.totalElements,
+                    first: pageData.first,
+                    last: pageData.last
+                };
+                setPagination(paginationData);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
+
+    useEffect(() => {
+        getCategories();
+        getIdeas(currentPage, selectedCategory);
+    }, [currentPage, selectedCategory]);
+
+    return (
+        <div className="flex min-h-screen w-full flex-col">
+            <Header/>
+            <main className="w-full flex-1">
+                <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+                    <div className="mb-8">
+                        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Explore
+                            Ideas</h1>
+                        <p className="mt-1 text-slate-600 dark:text-slate-400">Discover, validate, and support the next
+                            big thing from our community.</p>
+                    </div>
+                    <div className="mb-6 flex flex-wrap items-center gap-2">
+                        <button
+                            onClick={() => {
+                                const params = new URLSearchParams(searchParams);
+                                params.delete('category'); // All일 때는 category 쿼리스트링 제거
+                                params.set('page', '0');
+                                const queryString = params.toString();
+                                router.push(queryString ? `?${queryString}` : '/');
+                            }}
+                            className={`cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium shadow-sm ${
+                                selectedCategory === 'All'
+                                    ? 'bg-primary text-white'
+                                    : 'bg-slate-200 text-slate-700 transition-colors hover:bg-primary/20 hover:text-primary dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-primary/20 dark:hover:text-primary'
+                            }`}
+                        >
+                            All
+                        </button>
+                        {categories && categories.map((category, index) => (
+                            <button
+                                key={index}
+                                onClick={() => {
+                                    const params = new URLSearchParams(searchParams);
+                                    params.set('category', category.toUpperCase()); // 대문자로 변환
+                                    params.set('page', '0');
+                                    router.push(`?${params.toString()}`);
+                                }}
+                                className={`cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                                    selectedCategory === category
+                                        ? 'bg-primary text-white shadow-sm'
+                                        : 'bg-slate-200 text-slate-700 hover:bg-primary/20 hover:text-primary dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-primary/20 dark:hover:text-primary'
+                                }`}
+                            >
+                                {category}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {ideas && ideas.map((idea, index) => (
+                            <IdeaCard key={index} idea={idea}/>
+                        ))}
+                    </div>
+                    <div className="mt-8 flex items-center justify-center gap-2">
+                        <button
+                            onClick={() => {
+                                const params = new URLSearchParams(searchParams);
+                                params.set('page', Math.max(0, currentPage - 1).toString());
+                                router.push(`?${params.toString()}`);
+                            }}
+                            disabled={pagination?.first}
+                            className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 px-3 text-sm text-slate-700 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                        >
+                            Prev
+                        </button>
+                        {pagination && pagination.totalPages > 0 && Array.from({length: pagination.totalPages}, (_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => {
+                                    const params = new URLSearchParams(searchParams);
+                                    params.set('page', i.toString());
+                                    router.push(`?${params.toString()}`);
+                                }}
+                                className={`inline-flex h-10 min-w-10 items-center justify-center rounded-lg px-3 text-sm ${
+                                    i === pagination.currentPage
+                                        ? 'bg-primary text-white'
+                                        : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                                }`}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
+                        <button
+                            onClick={() => {
+                                const params = new URLSearchParams(searchParams);
+                                params.set('page', Math.min(pagination?.totalPages - 1, currentPage + 1).toString());
+                                router.push(`?${params.toString()}`);
+                            }}
+                            disabled={pagination?.last}
+                            className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 px-3 text-sm text-slate-700 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </main>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    );
 }
