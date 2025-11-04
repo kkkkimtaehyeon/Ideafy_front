@@ -11,12 +11,7 @@ export default function Header() {
             <div className="mx-auto flex max-w-7xl items-center justify-between p-4">
                 <div className="flex items-center gap-8">
                     <Link className="flex items-center gap-3 text-slate-900 dark:text-white" href="/">
-                        <div className="rounded bg-primary p-1.5 text-white">
-                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4 4H10V10H14V14H20V20H4V4Z" fill="currentColor"></path>
-                            </svg>
-                        </div>
-                        <span className="text-lg font-bold">Ideafy</span>
+                        <span className="text-lg font-bold">!deafyy</span>
                     </Link>
                     <nav className="hidden items-center gap-6 md:flex">
                         {/* <a className="text-sm font-medium text-slate-600 transition-colors hover:text-primary dark:text-slate-400 dark:hover:text-primary" href="/">Home</a> */}

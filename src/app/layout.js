@@ -8,8 +8,11 @@ const inter = Inter({
 });
 
 export const metadata = {
-    title: "Ideafy",
+    title: "Ideafyy",
     description: "Discover, validate, and support the next big thing from our community.",
+    icons: {
+        icon: "/myfavicon.ico",
+    }
 };
 
 export default function RootLayout({children}) {
