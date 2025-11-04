@@ -149,7 +149,7 @@ export default function EditIdeaPage() {
         }
       } catch (error) {
         console.error('Failed to load idea:', error);
-        alert('아이디어 정보를 불러오는데 실패했습니다.');
+        alert('Failed to load idea information.');
         router.push(`/ideas/${params.id}`);
       } finally {
         setLoading(false);
@@ -219,11 +219,11 @@ export default function EditIdeaPage() {
       const response = await api.put(`/ideas/${params.id}`, formDataToSend);
 
       console.log('Idea updated successfully:', response.data);
-      alert('아이디어가 수정되었습니다.');
+      alert('Idea has been updated.');
       router.push(`/ideas/${params.id}`);
     } catch (error) {
       console.error('Failed to update idea:', error);
-      alert('아이디어 수정에 실패했습니다. 다시 시도해주세요.');
+      alert('Failed to update idea. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -564,7 +564,7 @@ export default function EditIdeaPage() {
                                 <span className="font-bold text-accent mr-2">{alias}:</span>
                                 <a href={url} target="_blank" rel="noopener noreferrer" className="text-primary underline break-all">{url}</a>
                               </div>
-                              <button type="button" onClick={() => handleRemoveUrl(alias)} className="ml-3 text-red-400 hover:text-red-200 transition" title="삭제">
+                              <button type="button" onClick={() => handleRemoveUrl(alias)} className="ml-3 text-red-400 hover:text-red-200 transition" title="Delete">
                                 <span className="material-symbols-outlined text-base">delete</span>
                               </button>
                             </li>

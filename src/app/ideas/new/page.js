@@ -162,7 +162,7 @@ export default function SubmitIdeaPage() {
       router.push('/');
     } catch (error) {
       console.error('Failed to submit idea:', error);
-      alert('아이디어 제출에 실패했습니다. 다시 시도해주세요.');
+      alert('Failed to submit idea. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -173,7 +173,7 @@ export default function SubmitIdeaPage() {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 flex-grow">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-3 bg-gradient-to-r from-red-500 to-blue-600 bg-clip-text text-transparent">Launch Your Idea</h2>
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-3 bg-gradient-to-r from-red-500 to-blue-600 bg-clip-text text-transparent">Share Your Idea</h2>
             <p className="text-muted-dark text-lg max-w-2xl mx-auto">Turn your vision into reality. Share it with a community eager to build the future.</p>
           </div>
           <form className="space-y-16" onSubmit={handleSubmit}>
@@ -289,7 +289,7 @@ export default function SubmitIdeaPage() {
                   ></textarea>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-muted-dark" htmlFor="targetUser">Target Audience <span className="text-accent">*</span></label>
+                  <label className="block text-sm font-medium mb-2 text-muted-dark" htmlFor="targetUser">Target User <span className="text-accent">*</span></label>
                   <textarea 
                     className="form-textarea w-full rounded-lg border-subtle-dark bg-subtle-dark focus:border-primary p-2" 
                     id="targetUser" 
@@ -488,7 +488,7 @@ export default function SubmitIdeaPage() {
                                 <span className="font-bold text-accent mr-2">{alias}:</span>
                                 <a href={url} target="_blank" rel="noopener noreferrer" className="text-primary underline break-all">{url}</a>
                               </div>
-                              <button type="button" onClick={() => handleRemoveUrl(alias)} className="ml-3 text-red-400 hover:text-red-200 transition" title="삭제">
+                              <button type="button" onClick={() => handleRemoveUrl(alias)} className="ml-3 text-red-400 hover:text-red-200 transition" title="Delete">
                                 <span className="material-symbols-outlined text-base">delete</span>
                               </button>
                             </li>
@@ -510,7 +510,7 @@ export default function SubmitIdeaPage() {
               </div>
             </section> */}
 
-            <div className="space-y-8 bg-subtle-dark p-8 rounded-xl border border-slate-700">
+            {/* <div className="space-y-8 bg-subtle-dark p-8 rounded-xl border border-slate-700">
               <div className="space-y-4">
                 <h3 className="text-lg font-bold">Agreement</h3>
                 <div className="relative flex items-start">
@@ -522,7 +522,7 @@ export default function SubmitIdeaPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <div className="flex justify-end pt-8 border-t border-subtle-dark">
               <button 
@@ -537,7 +537,7 @@ export default function SubmitIdeaPage() {
                   </>
                 ) : (
                   <>
-                    Launch Idea <span className="material-symbols-outlined">rocket_launch</span>
+                    Post
                   </>
                 )}
               </button>

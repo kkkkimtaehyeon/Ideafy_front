@@ -6,6 +6,16 @@ import ImageCarousel from "@/components/ImageCarousel";
 import api from "@/app/common/api-axios";
 import {useAuth} from "@/app/contexts/AuthContext";
 
+// 날짜 포맷팅 함수 (yyyy-mm-dd)
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 export default function IdeaDetailPage() {
     const params = useParams();
     const router = useRouter();
@@ -58,7 +68,6 @@ export default function IdeaDetailPage() {
             if (user && params.id) {
                 try {
                     const response = await api.get(`/ideas/${params.id}/likes`);
-                    console.log('Likes response:', response.data); // 정상적으로 호출되는지 확인
                     const likeData = response.data;
                     setLikeCount(likeData.likeCount || 0);
                     setIsUserLiked(likeData.isUserLiked || false);
@@ -83,7 +92,7 @@ export default function IdeaDetailPage() {
             return;
         }
         if (!newComment.content.trim()) {
-            alert('댓글 내용을 입력해주세요.');
+            alert('Please enter a comment.');
             return;
         }
 
@@ -101,7 +110,7 @@ export default function IdeaDetailPage() {
             setNewComment({content: ''});
         } catch (error) {
             console.error('Failed to submit comment:', error);
-            alert('댓글 작성에 실패했습니다.');
+            alert('Failed to submit comment.');
         } finally {
             setSubmittingComment(false);
         }
@@ -115,7 +124,7 @@ export default function IdeaDetailPage() {
             return;
         }
         if (!replyContent.trim()) {
-            alert('댓글 내용을 입력해주세요.');
+            alert('Please enter a comment.');
             return;
         }
 
@@ -135,7 +144,7 @@ export default function IdeaDetailPage() {
             setReplyingTo(null);
         } catch (error) {
             console.error('Failed to submit reply:', error);
-            alert('대댓글 작성에 실패했습니다.');
+            alert('Failed to submit reply.');
         } finally {
             setSubmittingReply(false);
         }
@@ -164,7 +173,7 @@ export default function IdeaDetailPage() {
             setIsUserLiked(likeData.isUserLiked || false);
         } catch (error) {
             console.error('Failed to submit like:', error);
-            alert('좋아요 제출에 실패했습니다.');
+            alert('Failed to submit like.');
         } finally {
             setSubmittingLike(false);
         }
@@ -177,17 +186,17 @@ export default function IdeaDetailPage() {
             return;
         }
 
-        if (!confirm('정말로 이 글을 삭제하시겠습니까?')) {
+        if (!confirm('Are you sure you want to delete this post?')) {
             return;
         }
 
         try {
             await api.delete(`/ideas/${params.id}`);
-            alert('글이 삭제되었습니다.');
+            alert('Post has been deleted.');
             router.push('/');
         } catch (error) {
             console.error('Failed to delete idea:', error);
-            alert('글 삭제에 실패했습니다.');
+            alert('Failed to delete post.');
         }
     };
 
@@ -281,6 +290,9 @@ export default function IdeaDetailPage() {
                             <div className="flex-1">
                                 <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl break-words">{idea.title}</h1>
                                 <p className="mt-3 max-w-3xl text-lg leading-relaxed text-slate-600 dark:text-slate-400 whitespace-pre-wrap break-words">{idea.summary}</p>
+                                {idea.createdAt && (
+                                    <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{formatDate(idea.createdAt)}</p>
+                                )}
                             </div>
                             {user && (idea.userId === user.userId) && (
                                 <div className="flex gap-2">
@@ -585,6 +597,9 @@ export default function IdeaDetailPage() {
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <p className="text-sm font-semibold text-slate-900 dark:text-white">{comment.user.username}</p>
+                                                            {comment.createdAt && (
+                                                                <p className="text-xs text-slate-500 dark:text-slate-400">{formatDate(comment.createdAt)}</p>
+                                                            )}
                                                         </div>
                                                         <p className="mt-1 text-base leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-wrap break-words">
                                                             {comment.content}
@@ -660,6 +675,9 @@ export default function IdeaDetailPage() {
                                                                             <div
                                                                                 className="flex items-center gap-2 mb-1">
                                                                                 <p className="text-sm font-semibold text-slate-900 dark:text-white">{childComment.user.username}</p>
+                                                                                {childComment.createdAt && (
+                                                                                    <p className="text-xs text-slate-500 dark:text-slate-400">{formatDate(childComment.createdAt)}</p>
+                                                                                )}
                                                                             </div>
                                                                             <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-wrap break-words">
                                                                                 {childComment.content}
