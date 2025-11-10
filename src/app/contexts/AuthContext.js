@@ -68,7 +68,7 @@ export function AuthProvider({children}) {
         }
     }, [isLoading, user, pathname, router]);
 
-    const value = {user, isLoading, logout, refreshUser};
+    const value = {user, setUser, isLoading, logout, refreshUser};
 
     return (
         <AuthContext.Provider value={value}>
