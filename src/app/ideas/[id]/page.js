@@ -42,6 +42,11 @@ export default function IdeaDetailPage() {
     const [submittingEdit, setSubmittingEdit] = useState(false);
     const [deletingCommentId, setDeletingCommentId] = useState(null);
 
+    const ideaOwner = idea?.user ?? null;
+    const ideaOwnerName = ideaOwner?.username ?? ideaOwner?.name ?? idea?.userName ?? idea?.username ?? 'Anonymous';
+    const ideaOwnerProfileImage = ideaOwner?.profileImageUrl ?? idea?.profileImageUrl ?? idea?.userProfileImageUrl ?? null;
+    const ideaOwnerAvatarUrl = ideaOwnerProfileImage || 'https://picsum.photos/seed/idea-owner/120/120';
+
     useEffect(() => {
         console.log("user", user);
         console.log("comments", comments);
@@ -869,7 +874,27 @@ export default function IdeaDetailPage() {
                             </div>
                         </div>
 
+                        
+
                         <aside className="space-y-8">
+                            {/* 유저 프로필 */}
+                            <section
+                                className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
+                                <div className="flex items-center gap-4">
+                                    <div
+                                        className="h-14 w-14 flex-shrink-0 rounded-full bg-cover bg-center"
+                                        style={{
+                                            backgroundImage: `url(${ideaOwnerAvatarUrl})`
+                                        }}
+                                    />
+                                    <div>
+                                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Idea By</p>
+                                        <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-white">{ideaOwnerName}</p>
+                                    </div>
+                                </div>
+                            </section>
+ 
+                            {/* 좋아요, 댓글, 조회 */}
                             <section
                                 className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
                                 {/* <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-white">User Interaction</h2> */}
@@ -900,93 +925,6 @@ export default function IdeaDetailPage() {
                                     </div>
                                 </div>
                             </section>
-
-
-                            {/* <section className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
-                <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-white">Rating</h2>
-                {ratingStats.totalReviews > 0 ? (
-                  <div className="flex items-center gap-6">
-                    <div className="text-center">
-                      <p className="text-4xl font-black text-slate-900 dark:text-white">{ratingStats.averageRating}</p>
-                      <div className="mt-1 flex justify-center">
-                        {Array.from({ length: 5 }).map((_, idx) => {
-                          const starValue = idx + 1;
-                          const isFullStar = starValue <= Math.floor(ratingStats.averageRating);
-                          const isHalfStar = starValue === Math.ceil(ratingStats.averageRating) && ratingStats.averageRating % 1 !== 0;
-                          
-                          return (
-                            <span key={idx} className="material-symbols-outlined text-lg text-primary">
-                              {isFullStar ? 'star' : isHalfStar ? 'star_half' : 'star'}
-                            </span>
-                          );
-                        })}
-                      </div>
-                      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{ratingStats.totalReviews} reviews</p>
-                    </div>
-                    <div className="w-full flex-1 space-y-1">
-                      {ratingStats.ratingDistribution.map((pct, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{5 - i}</span>
-                          <div className="h-1.5 w-full flex-1 rounded-full bg-slate-200 dark:bg-slate-700">
-                            <div className="h-1.5 rounded-full bg-primary" style={{ width: `${pct}%` }}></div>
-                          </div>
-                          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{pct}%</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <div className="flex justify-center mb-2">
-                      <span className="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600">star</span>
-                      <span className="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600">star</span>
-                      <span className="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600">star</span>
-                      <span className="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600">star</span>
-                      <span className="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600">star</span>
-                    </div>
-                    <p className="text-slate-500 dark:text-slate-400">No ratings yet</p>
-                    <p className="text-sm text-slate-400 dark:text-slate-500">Be the first to rate this idea!</p>
-                  </div>
-                )}
-              </section> */}
-
-                            {/* <section className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
-                <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-white">Your Rating</h2>
-                <div className="space-y-4">
-                  <p className="text-sm text-slate-600 dark:text-slate-400">How would you rate this idea?</p>
-                  <div className="flex items-center gap-2">
-                    {Array.from({ length: 5 }).map((_, idx) => {
-                      const starValue = idx + 1;
-                      const isSelected = starValue <= userRating;
-                      return (
-                        <button
-                          key={idx}
-                          onClick={() => handleRatingSubmit(starValue)}
-                          disabled={submittingRating}
-                          className={`text-3xl transition-colors ${isSelected ? 'text-primary' : 'text-slate-300 hover:text-primary dark:text-slate-600 dark:hover:text-primary'} disabled:opacity-50 disabled:cursor-not-allowed`}
-                        >
-                          <span className="material-symbols-outlined">
-                            {isSelected ? 'star' : 'star'}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {userRating > 0 && (
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                      You rated this idea {userRating} star{userRating > 1 ? 's' : ''}
-                    </p>
-                  )}
-                </div>
-              </section> */}
-
-                            {/* <section className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
-                <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-white">Administrative Controls</h2>
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <button className="flex h-10 w-full items-center justify-center rounded-lg bg-primary/10 px-4 text-sm font-bold text-primary hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30">Report</button>
-                  <button className="flex h-10 w-full items-center justify-center rounded-lg bg-slate-100 px-4 text-sm font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">Hide</button>
-                </div>
-              </section> */}
                         </aside>
                     </div>
                 </div>
