@@ -665,14 +665,16 @@ export default function IdeaDetailPage() {
                                         <div className="space-y-6">
                                             {comments.map((comment) => (
                                                 <div key={comment.id} className="flex items-start gap-4">
-                                                    <div
-                                                        className="h-10 w-10 flex-shrink-0 rounded-full bg-cover bg-center"
-                                                        style={{
-                                                            backgroundImage: comment.user.profileImageUrl
-                                                                ? `url(${comment.user.profileImageUrl})`
-                                                                : "url(https://picsum.photos/seed/user/80/80)"
-                                                        }}
-                                                    />
+                                                    {comment.user && (
+                                                        <div
+                                                            style={{
+                                                                backgroundImage: comment.user.profileImageUrl
+                                                                    ? `url(${comment.user.profileImageUrl})`
+                                                                    : "url(https://picsum.photos/seed/user/80/80)"
+                                                            }}
+                                                            className="profile-img"
+                                                        />
+                                                    )}
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <p className="text-sm font-semibold text-slate-900 dark:text-white">{comment.user.username}</p>
