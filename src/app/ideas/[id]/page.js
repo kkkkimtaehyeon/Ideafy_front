@@ -1,5 +1,6 @@
 "use client";
 import {useState, useEffect} from "react";
+import Link from "next/link";
 import {useParams, useRouter} from "next/navigation";
 import Header from "@/components/Header";
 import ImageCarousel from "@/components/ImageCarousel";
@@ -45,10 +46,10 @@ export default function IdeaDetailPage() {
     const ideaOwner = idea?.user ?? null;
     const ideaOwnerName = ideaOwner?.username ?? ideaOwner?.name ?? idea?.userName ?? idea?.username ?? 'Anonymous';
     const ideaOwnerProfileImage = ideaOwner?.profileImageUrl ?? idea?.profileImageUrl ?? idea?.userProfileImageUrl ?? null;
-    const ideaOwnerAvatarUrl = ideaOwnerProfileImage || 'https://picsum.photos/seed/idea-owner/120/120';
 
     useEffect(() => {
         console.log("user", user);
+        console.log("idea", idea);
         console.log("comments", comments);
     }, [user]);
 
@@ -884,12 +885,12 @@ export default function IdeaDetailPage() {
                                     <div
                                         className="h-14 w-14 flex-shrink-0 rounded-full bg-cover bg-center"
                                         style={{
-                                            backgroundImage: `url(${ideaOwnerAvatarUrl})`
+                                            backgroundImage: `url(${idea.user.profileImageUrl})`
                                         }}
                                     />
                                     <div>
                                         <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Idea By</p>
-                                        <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-white">{ideaOwnerName}</p>
+                                        <Link href={`/users/${idea.user.userId}`} className="mt-1 text-lg font-semibold text-slate-900 dark:text-white">{idea.user.username}</Link>
                                     </div>
                                 </div>
                             </section>

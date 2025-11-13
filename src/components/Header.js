@@ -29,7 +29,7 @@ export default function Header() {
           </button> */}
                     {isLoading ? null : (
                         user ? (
-                            <a href="/me">
+                            <a href="/users/me">
                                 <div
                                     className="w-12 h-12 sm:w-12 sm:h-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                                     <User className="w-8 h-8 sm:w-8 sm:h-8 text-gray-300 dark:text-gray-200"/>
