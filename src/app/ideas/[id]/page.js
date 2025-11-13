@@ -268,54 +268,10 @@ export default function IdeaDetailPage() {
         }
     };
 
-    // 평점 데이터 상태
-    const [ratings, setRatings] = useState([]);
-    const [userRating, setUserRating] = useState(0);
-    const [submittingRating, setSubmittingRating] = useState(false);
-
     // 좋아요 데이터 상태
     const [likeCount, setLikeCount] = useState(0);
     const [isUserLiked, setIsUserLiked] = useState(false);
     const [submittingLike, setSubmittingLike] = useState(false);
-
-    // 평점 통계 계산
-    const calculateRatingStats = () => {
-        if (!ratings || ratings.length === 0) {
-            return {
-                averageRating: 0,
-                totalReviews: 0,
-                ratingDistribution: [0, 0, 0, 0, 0]
-            };
-        }
-
-        // ratings는 이미 Integer 배열이므로 직접 사용
-        const allRatings = ratings;
-
-        if (allRatings.length === 0) {
-            return {
-                averageRating: 0,
-                totalReviews: 0,
-                ratingDistribution: [0, 0, 0, 0, 0]
-            };
-        }
-
-        // 평균 평점 계산
-        const averageRating = allRatings.reduce((sum, rating) => sum + rating, 0) / allRatings.length;
-
-        // 평점 분포 계산 (5점부터 1점까지)
-        const ratingDistribution = [5, 4, 3, 2, 1].map(star => {
-            const count = allRatings.filter(rating => rating === star).length;
-            return Math.round((count / allRatings.length) * 100);
-        });
-
-        return {
-            averageRating: Math.round(averageRating * 10) / 10, // 소수점 첫째 자리까지
-            totalReviews: allRatings.length,
-            ratingDistribution
-        };
-    };
-
-    const ratingStats = calculateRatingStats();
 
     if (loading) {
         return (
@@ -499,120 +455,6 @@ export default function IdeaDetailPage() {
                                     </section>
                                 )}
 
-                                {/* Provide Feedback */}
-                                {activeTab === "feedback" && (
-                                    <section>
-                                        <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-white">Provide
-                                            Feedback</h2>
-                                        <div className="space-y-6">
-                                            <div
-                                                className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
-                                                <div className="flex items-start gap-4">
-                                                    <div className="flex-1">
-                                                        {/* <p className="font-medium text-slate-800 dark:text-slate-200">Share your thoughts on this idea. What do you like? What could be improved?</p> */}
-                                                        <p className="font-medium text-slate-800 dark:text-slate-200">{idea.feedback}</p>
-                                                        <div className="mt-4 space-y-4">
-                                                            <textarea
-                                                                className="form-textarea w-full rounded-lg border-slate-300 bg-slate-50 p-4 text-sm focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-primary"
-                                                                placeholder="Provide your feedback..."
-                                                                rows={4}></textarea>
-                                                            <div className="flex items-center justify-between">
-                                                                <div className="flex items-center gap-4">
-                                                                    <label
-                                                                        className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                                                                        <input defaultChecked
-                                                                               className="form-radio h-4 w-4 border-slate-300 text-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:focus:ring-offset-background-dark"
-                                                                               name="visibility-new" type="radio"/>
-                                                                        <span
-                                                                            className="material-symbols-outlined text-base">public</span>
-                                                                        Public
-                                                                    </label>
-                                                                    <label
-                                                                        className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                                                                        <input
-                                                                            className="form-radio h-4 w-4 border-slate-300 text-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:focus:ring-offset-background-dark"
-                                                                            name="visibility-new" type="radio"/>
-                                                                        <span
-                                                                            className="material-symbols-outlined text-base">lock</span>
-                                                                        Private
-                                                                    </label>
-                                                                </div>
-                                                                <button
-                                                                    className="cursor-pointer flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-white hover:bg-primary/90">Post
-                                                                    Feedback
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </section>
-                                )}
-
-                                {/* Existing Feedback */}
-                                {activeTab === "feedback" && (
-                                    <section>
-                                        <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-white">Existing
-                                            Feedback</h2>
-                                        <div className="space-y-6">
-                                            {[
-                                                {
-                                                    name: "Elena Rodriguez",
-                                                    time: "2 days ago",
-                                                    visibility: {label: "Public", variant: "public"},
-                                                    text:
-                                                        '"The subscription model is a solid choice, but have you considered a tiered pricing structure? A free basic tier could significantly boost user adoption, with premium features available in paid tiers. This could attract a wider audience initially."',
-                                                    avatar:
-                                                        "https://lh3.googleusercontent.com/aida-public/AB6AXuCier2fuzrf6ZMFz1h4p5uGEbBHlQ0wrAB5p-dg7c40QH-zfcJQ4HfDry6NPXDTaQughbw7FA9FOkmZCyeAp6kvOuWc-vrev6PgmQ0ovJVwtD5bx0dx_WRW0fxlZvsf0JBUuEeK2mH_qHJyU0V3O3vzn1IDK_aPO63-pMsWpLjWuyEUE7gOm_Igt2JAN6dveqD9gFrU9p51AQIm-N7_3S0tHz3S6DxZfmOgo-pMn-TMhY9s3UiLccViA72-IYTygc8d0yKbuBnnaQU",
-                                                },
-                                                {
-                                                    name: "Ben Carter",
-                                                    time: "5 days ago",
-                                                    visibility: {label: "Private", variant: "lock"},
-                                                    text:
-                                                        '"The AI personalization engine is ambitious. A potential roadblock could be the initial data required to train the models effectively. It might be worth exploring partnerships with educational institutions to access anonymized datasets. Also, ensuring data privacy will be paramount."',
-                                                    avatar:
-                                                        "https://lh3.googleusercontent.com/aida-public/AB6AXuB5_Qe85-lk1DycW1iMhvHzFPYHusAbsM67HfcmG6ynP28h6yjDogPQKzyRm1ihcAIy06NdlVcKMN-6V40HwgdSFgEBluhyEz__squWcg5SmCJ0jlCScrs1CIRcRfNPKFUs5oVKXMrGfjsHwYqNfmiEsn9t1scudFEGu3nvjc10HMTtv2F1Ensc0dRUy64DrqW6g03GqfheZmM0Mn7AQMqkRibxLbcrqsf4d3S1wHDxSGq9j3Yd3zGI4d-PLpWZ7SMTY_yKVHymjTk",
-                                                },
-                                                {
-                                                    name: "Aisha Khan",
-                                                    time: "1 week ago",
-                                                    visibility: {label: "Public", variant: "public"},
-                                                    text:
-                                                        '"The key differentiator will be the quality and adaptability of the AI-driven content recommendations. If the platform can truly create a unique learning path for each student that adapts in real-time, it will be a game-changer. Competitors often have a more static approach."',
-                                                    avatar:
-                                                        "https://lh3.googleusercontent.com/aida-public/AB6AXuC6vmNYFPWkju5HVVX0bInzatT3dqJHAd1FHC7D_vJ0A7fSYda8RketkNtgIOGhHiY_On0A_G7h2doQxUJ-qFxG_UPNkcdBgOpWehy9U2xIbru1gLSBvHe0r_HoBJOPTfSQh-LpPrE1jUjCDUdHQMDe84Eh0DErofuitzw_XmlYg_NfM4BGEsFtZ08cauFzkZ9AykS32BG5FQOcF1WvsCq9d8UP5JlxYZvORn8z978Q3Jq-WozwNnadYBb2FevX35-O-LT4V5UmEsc",
-                                                },
-                                            ].map((item, i) => (
-                                                <div key={i}
-                                                     className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
-                                                    <div className="flex items-start gap-4">
-                                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                        <img alt="User Avatar" className="h-10 w-10 rounded-full"
-                                                             src={item.avatar}/>
-                                                        <div className="flex-1">
-                                                            <div className="flex items-center justify-between">
-                                                                <div>
-                                                                    <p className="font-semibold text-slate-900 dark:text-white">{item.name}</p>
-                                                                    <p className="text-sm text-slate-500 dark:text-slate-400">{item.time}</p>
-                                                                </div>
-                                                                <div
-                                                                    className={`flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${item.visibility.variant === "public" ? "bg-primary/10 text-primary dark:bg-primary/20" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"}`}>
-                                                                    <span
-                                                                        className="material-symbols-outlined text-sm">{item.visibility.variant}</span>
-                                                                    <span>{item.visibility.label}</span>
-                                                                </div>
-                                                            </div>
-                                                            <p className="mt-3 text-slate-600 dark:text-slate-300">{item.text}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </section>
-                                )}
-
                                 {activeTab === "overview" && (
                                     <section>
                                         {/* <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-white">Comments ({comments.length})</h2> */}
@@ -654,24 +496,25 @@ export default function IdeaDetailPage() {
                                         <div className="space-y-6">
                                             {comments.map((comment) => (
                                                 <div key={comment.id} className="flex items-start gap-4">
-                                                    {comment.user && (
-                                                        <div
-                                                            style={{
-                                                                backgroundImage: comment.user.profileImageUrl
-                                                                    ? `url(${comment.user.profileImageUrl})`
-                                                                    : "url(https://picsum.photos/seed/user/80/80)"
-                                                            }}
-                                                            className="profile-img"
-                                                        />
-                                                    )}
+                                                    {/* ✅ FIX: Use optional chaining and a fallback image */}
+                                                    <div
+                                                        style={{
+                                                            backgroundImage: comment?.user?.profileImageUrl
+                                                                ? `url(${comment.user.profileImageUrl})`
+                                                                : "url(https://picsum.photos/seed/user/60/60)"
+                                                        }}
+                                                        className="profile-img"
+                                                    />
+
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2 mb-1">
-                                                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{comment.user.username}</p>
+                                                            {/* ✅ FIX: Use optional chaining and a fallback username */}
+                                                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{comment?.user?.username || 'Deleted User'}</p>
                                                             {comment.createdAt && (
                                                                 <p className="text-xs text-slate-500 dark:text-slate-400">{formatDate(comment.createdAt)}</p>
                                                             )}
                                                         </div>
-                                                        
+
                                                         {/* 수정 모드 */}
                                                         {editingCommentId === comment.id ? (
                                                             <div className="mt-1 space-y-3">
@@ -716,7 +559,8 @@ export default function IdeaDetailPage() {
                                                                             className="material-symbols-outlined text-base">reply</span>
                                                                         reply
                                                                     </button>
-                                                                    {user && user.userId === comment.user.userId && (
+                                                                    {/* ✅ FIX: Use optional chaining for comment.user.userId */}
+                                                                    {user && user.userId === comment?.user?.userId && (
                                                                         <>
                                                                             <button
                                                                                 onClick={() => handleStartEdit(comment)}
@@ -783,6 +627,7 @@ export default function IdeaDetailPage() {
                                                                 {comment.childComments.map((childComment) => (
                                                                     <div key={childComment.id}
                                                                          className="flex items-start gap-3">
+                                                                        {/* ✅ FIX: Use optional chaining and a fallback image */}
                                                                         <div
                                                                             className="h-8 w-8 flex-shrink-0 rounded-full bg-cover bg-center"
                                                                             style={{
@@ -794,12 +639,13 @@ export default function IdeaDetailPage() {
                                                                         <div className="flex-1">
                                                                             <div
                                                                                 className="flex items-center gap-2 mb-1">
-                                                                                <p className="text-sm font-semibold text-slate-900 dark:text-white">{childComment.user.username}</p>
+                                                                                {/* ✅ FIX: Use optional chaining and a fallback username */}
+                                                                                <p className="text-sm font-semibold text-slate-900 dark:text-white">{childComment?.user?.username || 'Deleted User'}</p>
                                                                                 {childComment.createdAt && (
                                                                                     <p className="text-xs text-slate-500 dark:text-slate-400">{formatDate(childComment.createdAt)}</p>
                                                                                 )}
                                                                             </div>
-                                                                            
+
                                                                             {/* 대댓글 수정 모드 */}
                                                                             {editingCommentId === childComment.id ? (
                                                                                 <div className="mt-1 space-y-3">
@@ -810,7 +656,8 @@ export default function IdeaDetailPage() {
                                                                                         onChange={(e) => setEditContent(e.target.value)}
                                                                                         required
                                                                                     ></textarea>
-                                                                                    <div className="flex justify-end gap-2">
+                                                                                    <div
+                                                                                        className="flex justify-end gap-2">
                                                                                         <button
                                                                                             type="button"
                                                                                             onClick={handleCancelEdit}
@@ -833,8 +680,10 @@ export default function IdeaDetailPage() {
                                                                                     <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-wrap break-words">
                                                                                         {childComment.content}
                                                                                     </p>
-                                                                                    {user && user.userId === childComment.user.userId && (
-                                                                                        <div className="mt-2 flex items-center gap-4">
+                                                                                    {/* ✅ FIX: Use optional chaining for childComment.user.userId */}
+                                                                                    {user && user.userId === childComment?.user?.userId && (
+                                                                                        <div
+                                                                                            className="mt-2 flex items-center gap-4">
                                                                                             <button
                                                                                                 onClick={() => handleStartEdit(childComment)}
                                                                                                 className="text-sm text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary"
@@ -866,26 +715,31 @@ export default function IdeaDetailPage() {
                             </div>
                         </div>
 
-                        
 
                         <aside className="space-y-8">
                             {/* 유저 프로필 */}
                             <section
                                 className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
                                 <div className="flex items-center gap-4">
+                                    {/* ✅ FIX: Use optional chaining and a fallback image */}
                                     <div
                                         className="h-14 w-14 flex-shrink-0 rounded-full bg-cover bg-center"
                                         style={{
-                                            backgroundImage: `url(${idea?.user?.profileImageUrl})`
+                                            backgroundImage: `url(${idea?.user?.profileImageUrl || 'https://picsum.photos/seed/user/80/80'})`
                                         }}
                                     />
                                     <div>
-                                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Idea By</p>
-                                        <Link href={`/users/${idea.user.userId}`} className="mt-1 text-lg font-semibold text-slate-900 dark:text-white">{idea.user.username}</Link>
+                                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Idea
+                                            By</p>
+                                        {/* ✅ FIX: Use optional chaining and fallbacks for link and username */}
+                                        <Link href={`/users/${idea?.user?.userId || ''}`}
+                                              className="mt-1 text-lg font-semibold text-slate-900 dark:text-white">
+                                            {idea?.user?.username || 'Unknown User'}
+                                        </Link>
                                     </div>
                                 </div>
                             </section>
- 
+
                             {/* 좋아요, 댓글, 조회 */}
                             <section
                                 className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
@@ -924,5 +778,3 @@ export default function IdeaDetailPage() {
         </div>
     );
 }
-
-
