@@ -43,17 +43,6 @@ export default function IdeaDetailPage() {
     const [submittingEdit, setSubmittingEdit] = useState(false);
     const [deletingCommentId, setDeletingCommentId] = useState(null);
 
-    const ideaOwner = idea?.user ?? null;
-    const ideaOwnerName = ideaOwner?.username ?? ideaOwner?.name ?? idea?.userName ?? idea?.username ?? 'Anonymous';
-    const ideaOwnerProfileImage = ideaOwner?.profileImageUrl ?? idea?.profileImageUrl ?? idea?.userProfileImageUrl ?? null;
-
-    useEffect(() => {
-        console.log("user", user);
-        console.log("idea", idea);
-        console.log("comments", comments);
-    }, [user]);
-
-
     useEffect(() => {
         const fetchIdea = async () => {
             try {
@@ -797,7 +786,7 @@ export default function IdeaDetailPage() {
                                                                         <div
                                                                             className="h-8 w-8 flex-shrink-0 rounded-full bg-cover bg-center"
                                                                             style={{
-                                                                                backgroundImage: childComment.user.profileImageUrl
+                                                                                backgroundImage: childComment?.user?.profileImageUrl
                                                                                     ? `url(${childComment.user.profileImageUrl})`
                                                                                     : "url(https://picsum.photos/seed/user/60/60)"
                                                                             }}
@@ -887,7 +876,7 @@ export default function IdeaDetailPage() {
                                     <div
                                         className="h-14 w-14 flex-shrink-0 rounded-full bg-cover bg-center"
                                         style={{
-                                            backgroundImage: `url(${idea.user.profileImageUrl})`
+                                            backgroundImage: `url(${idea?.user?.profileImageUrl})`
                                         }}
                                     />
                                     <div>
