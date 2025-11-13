@@ -7,6 +7,13 @@ import ImageCarousel from "@/components/ImageCarousel";
 import api from "@/app/common/api-axios";
 import {useAuth} from "@/app/contexts/AuthContext";
 
+const similarIdeas = [
+    {id: 1, title: "Social Networking App", summary: "A platform to connect with friends and share updates."},
+    {id: 2, title: "E-commerce Website", summary: "An online store for buying and selling products."},
+    {id: 3, title: "Fitness Tracker", summary: "An app to monitor workouts and track progress."},
+];
+
+
 // 날짜 포맷팅 함수 (yyyy-mm-dd)
 function formatDate(dateString) {
     if (!dateString) return '';
@@ -15,6 +22,13 @@ function formatDate(dateString) {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+}
+
+// ★★★★★ 스켈레톤 컴포넌트 (간단구현, 필요시 src/components/Skeleton.js로 분리 가능) ★★★★★
+function Skeleton({className = '', style}) {
+    return (
+        <div className={`animate-pulse bg-slate-200 dark:bg-slate-700 rounded ${className}`} style={style}></div>
+    );
 }
 
 export default function IdeaDetailPage() {
@@ -273,15 +287,50 @@ export default function IdeaDetailPage() {
     const [isUserLiked, setIsUserLiked] = useState(false);
     const [submittingLike, setSubmittingLike] = useState(false);
 
+    // ---------- 주요 렌더링부(아래쪽) 일부만 예시 수정 --------------
     if (loading) {
+        // 페이지 전체 스켈레톤, 세부 컴포넌트 스타일 참고 (Skeleton 컴포넌트 사용)
         return (
-            <div
-                className="flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200">
+            <div className="flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200">
                 <Header/>
                 <main className="flex-1 flex items-center justify-center">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                        <p className="mt-4 text-slate-600 dark:text-slate-400">Loading idea...</p>
+                    <div className="max-w-4xl w-full mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 p-4">
+                        <div className="lg:col-span-2 space-y-6">
+                            <Skeleton className="h-56 w-full" /> {/* 이미지 */}
+                            <Skeleton className="h-8 w-1/2 mb-2" /> {/* 타이틀 */}
+                            <Skeleton className="h-5 w-1/3 mb-4" /> {/* 날짜/작성자 */}
+                            <Skeleton className="h-7 w-1/4 mb-4" /> {/* 카테고리 */}
+                            <Skeleton className="h-16 w-full mb-3" /> {/* 문제 */}
+                            <Skeleton className="h-16 w-full mb-3" /> {/* 솔루션 */}
+                            <Skeleton className="h-10 w-2/3" /> {/* 상세/기타 */}
+                        </div>
+                        {/* 사이드(프로필+좋아요 등) */}
+                        <aside className="space-y-8">
+                            {/* 유저 프로필 skeleton */}
+                            <section className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
+                                <div className="flex items-center gap-4">
+                                    <Skeleton className="h-14 w-14 rounded-full" />
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-4 w-16" />
+                                        <Skeleton className="h-5 w-24" />
+                                    </div>
+                                </div>
+                            </section>
+                            <section className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
+                                <div className="flex items-center justify-around space-x-2">
+                                    <Skeleton className="h-6 w-8" />
+                                    <Skeleton className="h-6 w-8" />
+                                    <Skeleton className="h-6 w-8" />
+                                </div>
+                            </section>
+                            <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-background-dark/50">
+                                <Skeleton className="h-6 w-20 mb-4" />
+                                <div className="space-y-2">
+                                    <Skeleton className="h-6 w-full" />
+                                    <Skeleton className="h-6 w-full" />
+                                </div>
+                            </section>
+                        </aside>
                     </div>
                 </main>
             </div>
@@ -731,10 +780,9 @@ export default function IdeaDetailPage() {
                                     <div>
                                         <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Idea
                                             By</p>
-                                        {/* ✅ FIX: Use optional chaining and fallbacks for link and username */}
                                         <Link href={`/users/${idea?.user?.userId || ''}`}
                                               className="mt-1 text-lg font-semibold text-slate-900 dark:text-white">
-                                            {idea?.user?.username || 'Unknown User'}
+                                            {idea?.user?.username || "Unknown User"}
                                         </Link>
                                     </div>
                                 </div>
@@ -771,6 +819,35 @@ export default function IdeaDetailPage() {
                                     </div>
                                 </div>
                             </section>
+
+                            {/*유사한 아이디어*/}
+                            <section
+                                className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-background-dark/50">
+                                <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
+                                    Similar Ideas
+                                </h1>
+
+                                <div className="flex flex-col gap-3">
+                                    {similarIdeas.map((similarIdea) => (
+                                        <Link
+                                            key={similarIdea.id}
+                                            href={`/ideas/${similarIdea.id}`}
+                                            className="block rounded-lg border border-slate-100 bg-slate-50 px-4 py-3
+                   text-slate-800 shadow-sm transition-all duration-200
+                   hover:bg-slate-100 hover:shadow-md dark:border-slate-700
+                   dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+                                        >
+                                            <h2 className="font-semibold text-base">{similarIdea.title}</h2>
+                                            {similarIdea.summary && (
+                                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
+                                                    {similarIdea.summary}
+                                                </p>
+                                            )}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </section>
+
                         </aside>
                     </div>
                 </div>
