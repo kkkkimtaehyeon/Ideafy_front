@@ -39,4 +39,8 @@
   button {
     @apply cursor-pointer;
   }
+
+  textarea::placeholder {
+    @apply text-gray-400;
+  }
 }
