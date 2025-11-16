@@ -7,11 +7,11 @@ import ImageCarousel from "@/components/ImageCarousel";
 import api from "@/app/common/api-axios";
 import {useAuth} from "@/app/contexts/AuthContext";
 
-const similarIdeas = [
-    {id: 1, title: "Social Networking App", summary: "A platform to connect with friends and share updates."},
-    {id: 2, title: "E-commerce Website", summary: "An online store for buying and selling products."},
-    {id: 3, title: "Fitness Tracker", summary: "An app to monitor workouts and track progress."},
-];
+// const similarIdeas = [
+//     {id: 1, title: "Social Networking App", summary: "A platform to connect with friends and share updates."},
+//     {id: 2, title: "E-commerce Website", summary: "An online store for buying and selling products."},
+//     {id: 3, title: "Fitness Tracker", summary: "An app to monitor workouts and track progress."},
+// ];
 
 
 // 날짜 포맷팅 함수 (yyyy-mm-dd)
@@ -35,6 +35,7 @@ export default function IdeaDetailPage() {
     const params = useParams();
     const router = useRouter();
     const [idea, setIdea] = useState(null);
+    const [similarIdeas, setSimilarIdeas] = useState([]);
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("overview");
@@ -69,6 +70,17 @@ export default function IdeaDetailPage() {
             }
         };
 
+        const fetchSimilarIdeas = async () => {
+            try {
+                const response = await api.get(`/ideas/${params.id}/similar`);
+                setSimilarIdeas(response.data);
+            } catch (error) {
+                console.error('Failed to fetch idea:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
         const fetchComments = async () => {
             try {
                 const response = await api.get(`/ideas/${params.id}/comments`);
@@ -79,6 +91,7 @@ export default function IdeaDetailPage() {
         };
         if (params.id) {
             fetchIdea();
+            fetchSimilarIdeas();
             fetchComments();
         }
     }, [params.id]);
@@ -291,43 +304,47 @@ export default function IdeaDetailPage() {
     if (loading) {
         // 페이지 전체 스켈레톤, 세부 컴포넌트 스타일 참고 (Skeleton 컴포넌트 사용)
         return (
-            <div className="flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200">
+            <div
+                className="flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200">
                 <Header/>
                 <main className="flex-1 flex items-center justify-center">
                     <div className="max-w-4xl w-full mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 p-4">
                         <div className="lg:col-span-2 space-y-6">
-                            <Skeleton className="h-56 w-full" /> {/* 이미지 */}
-                            <Skeleton className="h-8 w-1/2 mb-2" /> {/* 타이틀 */}
-                            <Skeleton className="h-5 w-1/3 mb-4" /> {/* 날짜/작성자 */}
-                            <Skeleton className="h-7 w-1/4 mb-4" /> {/* 카테고리 */}
-                            <Skeleton className="h-16 w-full mb-3" /> {/* 문제 */}
-                            <Skeleton className="h-16 w-full mb-3" /> {/* 솔루션 */}
-                            <Skeleton className="h-10 w-2/3" /> {/* 상세/기타 */}
+                            <Skeleton className="h-56 w-full"/> {/* 이미지 */}
+                            <Skeleton className="h-8 w-1/2 mb-2"/> {/* 타이틀 */}
+                            <Skeleton className="h-5 w-1/3 mb-4"/> {/* 날짜/작성자 */}
+                            <Skeleton className="h-7 w-1/4 mb-4"/> {/* 카테고리 */}
+                            <Skeleton className="h-16 w-full mb-3"/> {/* 문제 */}
+                            <Skeleton className="h-16 w-full mb-3"/> {/* 솔루션 */}
+                            <Skeleton className="h-10 w-2/3"/> {/* 상세/기타 */}
                         </div>
                         {/* 사이드(프로필+좋아요 등) */}
                         <aside className="space-y-8">
                             {/* 유저 프로필 skeleton */}
-                            <section className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
+                            <section
+                                className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
                                 <div className="flex items-center gap-4">
-                                    <Skeleton className="h-14 w-14 rounded-full" />
+                                    <Skeleton className="h-14 w-14 rounded-full"/>
                                     <div className="space-y-2">
-                                        <Skeleton className="h-4 w-16" />
-                                        <Skeleton className="h-5 w-24" />
+                                        <Skeleton className="h-4 w-16"/>
+                                        <Skeleton className="h-5 w-24"/>
                                     </div>
                                 </div>
                             </section>
-                            <section className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
+                            <section
+                                className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50">
                                 <div className="flex items-center justify-around space-x-2">
-                                    <Skeleton className="h-6 w-8" />
-                                    <Skeleton className="h-6 w-8" />
-                                    <Skeleton className="h-6 w-8" />
+                                    <Skeleton className="h-6 w-8"/>
+                                    <Skeleton className="h-6 w-8"/>
+                                    <Skeleton className="h-6 w-8"/>
                                 </div>
                             </section>
-                            <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-background-dark/50">
-                                <Skeleton className="h-6 w-20 mb-4" />
+                            <section
+                                className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-background-dark/50">
+                                <Skeleton className="h-6 w-20 mb-4"/>
                                 <div className="space-y-2">
-                                    <Skeleton className="h-6 w-full" />
-                                    <Skeleton className="h-6 w-full" />
+                                    <Skeleton className="h-6 w-full"/>
+                                    <Skeleton className="h-6 w-full"/>
                                 </div>
                             </section>
                         </aside>
@@ -542,347 +559,368 @@ export default function IdeaDetailPage() {
                                         </div>
 
                                         {/* Comments List */}
-                                        
-<div className="space-y-6">
-  {comments.map((comment) => (
-    <div key={comment.id} className="flex items-start gap-4">
-      {/* 삭제된 댓글인 경우 */}
-      {comment.deleted ? (
-        <>
-          {/* 기본 프로필 이미지 */}
-          <div
-            className="h-12 w-12 flex-shrink-0 rounded-full bg-slate-300 dark:bg-slate-600"
-          />
-          <div className="flex-1">
-            <p className="text-base italic text-slate-400 dark:text-slate-500">
-              This comment has been deleted
-            </p>
-            
-            {/* 대댓글은 여전히 표시 */}
-            {comment.childComments && comment.childComments.length > 0 && (
-              <div className="mt-4 ml-4 space-y-4 border-l-2 border-slate-200 dark:border-slate-700 pl-4">
-                {comment.childComments.map((childComment) => (
-                  <div key={childComment.id} className="flex items-start gap-3">
-                    {/* 대댓글도 삭제된 경우 */}
-                    {childComment.deleted ? (
-                      <>
-                        <div className="h-8 w-8 flex-shrink-0 rounded-full bg-slate-300 dark:bg-slate-600" />
-                        <div className="flex-1">
-                          <p className="text-sm italic text-slate-400 dark:text-slate-500">
-                            This comment has been deleted
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        {/* 대댓글 정상 표시 */}
-                        <div
-                          className="h-8 w-8 flex-shrink-0 rounded-full bg-cover bg-center"
-                          style={{
-                            backgroundImage: childComment?.user?.profileImageUrl
-                              ? `url(${childComment.user.profileImageUrl})`
-                              : "url(https://picsum.photos/seed/user/60/60)"
-                          }}
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                              {childComment?.user?.username || 'Deleted User'}
-                            </p>
-                            {childComment.createdAt && (
-                              <p className="text-xs text-slate-500 dark:text-slate-400">
-                                {formatDate(childComment.createdAt)}
-                              </p>
-                            )}
-                          </div>
 
-                          {/* 대댓글 수정 모드 */}
-                          {editingCommentId === childComment.id ? (
-                            <div className="mt-1 space-y-3">
+                                        <div className="space-y-6">
+                                            {comments.map((comment) => (
+                                                <div key={comment.id} className="flex items-start gap-4">
+                                                    {/* 삭제된 댓글인 경우 */}
+                                                    {comment.deleted ? (
+                                                        <>
+                                                            {/* 기본 프로필 이미지 */}
+                                                            <div
+                                                                className="h-12 w-12 flex-shrink-0 rounded-full bg-slate-300 dark:bg-slate-600"
+                                                            />
+                                                            <div className="flex-1">
+                                                                <p className="text-base italic text-slate-400 dark:text-slate-500">
+                                                                    This comment has been deleted
+                                                                </p>
+
+                                                                {/* 대댓글은 여전히 표시 */}
+                                                                {comment.childComments && comment.childComments.length > 0 && (
+                                                                    <div
+                                                                        className="mt-4 ml-4 space-y-4 border-l-2 border-slate-200 dark:border-slate-700 pl-4">
+                                                                        {comment.childComments.map((childComment) => (
+                                                                            <div key={childComment.id}
+                                                                                 className="flex items-start gap-3">
+                                                                                {/* 대댓글도 삭제된 경우 */}
+                                                                                {childComment.deleted ? (
+                                                                                    <>
+                                                                                        <div
+                                                                                            className="h-8 w-8 flex-shrink-0 rounded-full bg-slate-300 dark:bg-slate-600"/>
+                                                                                        <div className="flex-1">
+                                                                                            <p className="text-sm italic text-slate-400 dark:text-slate-500">
+                                                                                                This comment has been
+                                                                                                deleted
+                                                                                            </p>
+                                                                                        </div>
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        {/* 대댓글 정상 표시 */}
+                                                                                        <div
+                                                                                            className="h-8 w-8 flex-shrink-0 rounded-full bg-cover bg-center"
+                                                                                            style={{
+                                                                                                backgroundImage: childComment?.user?.profileImageUrl
+                                                                                                    ? `url(${childComment.user.profileImageUrl})`
+                                                                                                    : "url(https://picsum.photos/seed/user/60/60)"
+                                                                                            }}
+                                                                                        />
+                                                                                        <div className="flex-1">
+                                                                                            <div
+                                                                                                className="flex items-center gap-2 mb-1">
+                                                                                                <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                                                                                                    {childComment?.user?.username || 'Deleted User'}
+                                                                                                </p>
+                                                                                                {childComment.createdAt && (
+                                                                                                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                                                                                                        {formatDate(childComment.createdAt)}
+                                                                                                    </p>
+                                                                                                )}
+                                                                                            </div>
+
+                                                                                            {/* 대댓글 수정 모드 */}
+                                                                                            {editingCommentId === childComment.id ? (
+                                                                                                <div
+                                                                                                    className="mt-1 space-y-3">
                               <textarea
-                                className="form-textarea w-full rounded-lg border-slate-300 bg-slate-50 p-3 text-sm focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-primary"
-                                rows={3}
-                                value={editContent}
-                                onChange={(e) => setEditContent(e.target.value)}
-                                required
+                                  className="form-textarea w-full rounded-lg border-slate-300 bg-slate-50 p-3 text-sm focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-primary"
+                                  rows={3}
+                                  value={editContent}
+                                  onChange={(e) => setEditContent(e.target.value)}
+                                  required
                               />
-                              <div className="flex justify-end gap-2">
-                                <button
-                                  type="button"
-                                  onClick={handleCancelEdit}
-                                  className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleEditSubmit(childComment.id)}
-                                  disabled={submittingEdit}
-                                  className="text-sm text-primary hover:text-primary/80 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  {submittingEdit ? 'Saving...' : 'Edit'}
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            <>
-                              <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-wrap break-words">
-                                {childComment.content}
-                              </p>
-                              {user && user.userId === childComment?.user?.userId && (
-                                <div className="mt-2 flex items-center gap-4">
-                                  <button
-                                    onClick={() => handleStartEdit(childComment)}
-                                    className="text-sm text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary"
-                                  >
-                                    edit
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteComment(childComment.id)}
-                                    disabled={deletingCommentId === childComment.id}
-                                    className="text-sm text-slate-500 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                                  >
-                                    {deletingCommentId === childComment.id ? 'Deleting...' : 'delete'}
-                                  </button>
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </>
-      ) : (
-        <>
-          {/* 정상 댓글 표시 */}
-          <div
-            style={{
-              backgroundImage: comment?.user?.profileImageUrl
-                ? `url(${comment.user.profileImageUrl})`
-                : "url(https://picsum.photos/seed/user/60/60)"
-            }}
-            className="profile-img"
-          />
+                                                                                                    <div
+                                                                                                        className="flex justify-end gap-2">
+                                                                                                        <button
+                                                                                                            type="button"
+                                                                                                            onClick={handleCancelEdit}
+                                                                                                            className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+                                                                                                        >
+                                                                                                            Cancel
+                                                                                                        </button>
+                                                                                                        <button
+                                                                                                            type="button"
+                                                                                                            onClick={() => handleEditSubmit(childComment.id)}
+                                                                                                            disabled={submittingEdit}
+                                                                                                            className="text-sm text-primary hover:text-primary/80 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                                                        >
+                                                                                                            {submittingEdit ? 'Saving...' : 'Edit'}
+                                                                                                        </button>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            ) : (
+                                                                                                <>
+                                                                                                    <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-wrap break-words">
+                                                                                                        {childComment.content}
+                                                                                                    </p>
+                                                                                                    {user && user.userId === childComment?.user?.userId && (
+                                                                                                        <div
+                                                                                                            className="mt-2 flex items-center gap-4">
+                                                                                                            <button
+                                                                                                                onClick={() => handleStartEdit(childComment)}
+                                                                                                                className="text-sm text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary"
+                                                                                                            >
+                                                                                                                edit
+                                                                                                            </button>
+                                                                                                            <button
+                                                                                                                onClick={() => handleDeleteComment(childComment.id)}
+                                                                                                                disabled={deletingCommentId === childComment.id}
+                                                                                                                className="text-sm text-slate-500 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                                                            >
+                                                                                                                {deletingCommentId === childComment.id ? 'Deleting...' : 'delete'}
+                                                                                                            </button>
+                                                                                                        </div>
+                                                                                                    )}
+                                                                                                </>
+                                                                                            )}
+                                                                                        </div>
+                                                                                    </>
+                                                                                )}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            {/* 정상 댓글 표시 */}
+                                                            <div
+                                                                style={{
+                                                                    backgroundImage: comment?.user?.profileImageUrl
+                                                                        ? `url(${comment.user.profileImageUrl})`
+                                                                        : "url(https://picsum.photos/seed/user/60/60)"
+                                                                }}
+                                                                className="profile-img"
+                                                            />
 
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                {comment?.user?.username || 'Deleted User'}
-              </p>
-              {comment.createdAt && (
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {formatDate(comment.createdAt)}
-                </p>
-              )}
-            </div>
+                                                            <div className="flex-1">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                                                                        {comment?.user?.username || 'Deleted User'}
+                                                                    </p>
+                                                                    {comment.createdAt && (
+                                                                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                                                                            {formatDate(comment.createdAt)}
+                                                                        </p>
+                                                                    )}
+                                                                </div>
 
-            {/* 수정 모드 */}
-            {editingCommentId === comment.id ? (
-              <div className="mt-1 space-y-3">
+                                                                {/* 수정 모드 */}
+                                                                {editingCommentId === comment.id ? (
+                                                                    <div className="mt-1 space-y-3">
                 <textarea
-                  className="form-textarea w-full rounded-lg border-slate-300 bg-slate-50 p-3 text-base focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-primary"
-                  rows={4}
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  required
+                    className="form-textarea w-full rounded-lg border-slate-300 bg-slate-50 p-3 text-base focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-primary"
+                    rows={4}
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    required
                 />
-                <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={handleCancelEdit}
-                    className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleEditSubmit(comment.id)}
-                    disabled={submittingEdit}
-                    className="text-sm text-primary hover:text-primary/80 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {submittingEdit ? 'Saving...' : 'Edit'}
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <p className="mt-1 text-base leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-wrap break-words">
-                  {comment.content}
-                </p>
+                                                                        <div className="flex justify-end gap-2">
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={handleCancelEdit}
+                                                                                className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+                                                                            >
+                                                                                Cancel
+                                                                            </button>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handleEditSubmit(comment.id)}
+                                                                                disabled={submittingEdit}
+                                                                                className="text-sm text-primary hover:text-primary/80 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                            >
+                                                                                {submittingEdit ? 'Saving...' : 'Edit'}
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : (
+                                                                    <>
+                                                                        <p className="mt-1 text-base leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-wrap break-words">
+                                                                            {comment.content}
+                                                                        </p>
 
-                {/* Reply button and Edit/Delete buttons */}
-                <div className="mt-3 flex items-center gap-4">
-                  <button
-                    onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                    className="cursor-pointer flex items-center gap-1 text-sm text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary"
-                  >
-                    <span className="material-symbols-outlined text-base">reply</span>
-                    reply
-                  </button>
-                  {user && user.userId === comment?.user?.userId && (
-                    <>
-                      <button
-                        onClick={() => handleStartEdit(comment)}
-                        className="text-sm text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary"
-                      >
-                        edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteComment(comment.id)}
-                        disabled={deletingCommentId === comment.id}
-                        className="text-sm text-slate-500 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {deletingCommentId === comment.id ? 'Deleting...' : 'delete'}
-                      </button>
-                    </>
-                  )}
-                </div>
-              </>
-            )}
+                                                                        {/* Reply button and Edit/Delete buttons */}
+                                                                        <div className="mt-3 flex items-center gap-4">
+                                                                            <button
+                                                                                onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                                                                                className="cursor-pointer flex items-center gap-1 text-sm text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary"
+                                                                            >
+                                                                                <span
+                                                                                    className="material-symbols-outlined text-base">reply</span>
+                                                                                reply
+                                                                            </button>
+                                                                            {user && user.userId === comment?.user?.userId && (
+                                                                                <>
+                                                                                    <button
+                                                                                        onClick={() => handleStartEdit(comment)}
+                                                                                        className="text-sm text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary"
+                                                                                    >
+                                                                                        edit
+                                                                                    </button>
+                                                                                    <button
+                                                                                        onClick={() => handleDeleteComment(comment.id)}
+                                                                                        disabled={deletingCommentId === comment.id}
+                                                                                        className="text-sm text-slate-500 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                                    >
+                                                                                        {deletingCommentId === comment.id ? 'Deleting...' : 'delete'}
+                                                                                    </button>
+                                                                                </>
+                                                                            )}
+                                                                        </div>
+                                                                    </>
+                                                                )}
 
-            {/* Reply form */}
-            {replyingTo === comment.id && (
-              <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
-                <form onSubmit={(e) => handleReplySubmit(e, comment.id)} className="space-y-4">
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                      Your Reply
-                    </label>
-                    <textarea
-                      className="form-textarea w-full rounded-lg border-slate-300 bg-white p-3 text-sm focus:border-primary focus:ring-primary dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:placeholder-slate-400 dark:focus:border-primary"
-                      placeholder="Write a reply..."
-                      rows={3}
-                      value={replyContent}
-                      onChange={(e) => setReplyContent(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <button
-                      type="button"
-                      onClick={handleCancelReply}
-                      className="flex h-8 items-center justify-center rounded-lg border border-slate-300 px-4 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={submittingReply}
-                      className="flex h-8 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {submittingReply ? 'Submitting...' : 'Submit Reply'}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
+                                                                {/* Reply form */}
+                                                                {replyingTo === comment.id && (
+                                                                    <div
+                                                                        className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+                                                                        <form
+                                                                            onSubmit={(e) => handleReplySubmit(e, comment.id)}
+                                                                            className="space-y-4">
+                                                                            <div>
+                                                                                <label
+                                                                                    className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                                                                                    Your Reply
+                                                                                </label>
+                                                                                <textarea
+                                                                                    className="form-textarea w-full rounded-lg border-slate-300 bg-white p-3 text-sm focus:border-primary focus:ring-primary dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:placeholder-slate-400 dark:focus:border-primary"
+                                                                                    placeholder="Write a reply..."
+                                                                                    rows={3}
+                                                                                    value={replyContent}
+                                                                                    onChange={(e) => setReplyContent(e.target.value)}
+                                                                                    required
+                                                                                />
+                                                                            </div>
+                                                                            <div className="flex justify-end gap-2">
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={handleCancelReply}
+                                                                                    className="flex h-8 items-center justify-center rounded-lg border border-slate-300 px-4 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+                                                                                >
+                                                                                    Cancel
+                                                                                </button>
+                                                                                <button
+                                                                                    type="submit"
+                                                                                    disabled={submittingReply}
+                                                                                    className="flex h-8 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                                >
+                                                                                    {submittingReply ? 'Submitting...' : 'Submit Reply'}
+                                                                                </button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                )}
 
-            {/* 대댓글 */}
-            {comment.childComments && comment.childComments.length > 0 && (
-              <div className="mt-4 ml-4 space-y-4 border-l-2 border-slate-200 dark:border-slate-700 pl-4">
-                {comment.childComments.map((childComment) => (
-                  <div key={childComment.id} className="flex items-start gap-3">
-                    {/* 대댓글도 삭제된 경우 */}
-                    {childComment.deleted ? (
-                      <>
-                        <div className="h-8 w-8 flex-shrink-0 rounded-full bg-slate-300 dark:bg-slate-600" />
-                        <div className="flex-1">
-                          <p className="text-sm italic text-slate-400 dark:text-slate-500">
-                            This comment has been deleted
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div
-                          className="h-8 w-8 flex-shrink-0 rounded-full bg-cover bg-center"
-                          style={{
-                            backgroundImage: childComment?.user?.profileImageUrl
-                              ? `url(${childComment.user.profileImageUrl})`
-                              : "url(https://picsum.photos/seed/user/60/60)"
-                          }}
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                              {childComment?.user?.username || 'Deleted User'}
-                            </p>
-                            {childComment.createdAt && (
-                              <p className="text-xs text-slate-500 dark:text-slate-400">
-                                {formatDate(childComment.createdAt)}
-                              </p>
-                            )}
-                          </div>
+                                                                {/* 대댓글 */}
+                                                                {comment.childComments && comment.childComments.length > 0 && (
+                                                                    <div
+                                                                        className="mt-4 ml-4 space-y-4 border-l-2 border-slate-200 dark:border-slate-700 pl-4">
+                                                                        {comment.childComments.map((childComment) => (
+                                                                            <div key={childComment.id}
+                                                                                 className="flex items-start gap-3">
+                                                                                {/* 대댓글도 삭제된 경우 */}
+                                                                                {childComment.deleted ? (
+                                                                                    <>
+                                                                                        <div
+                                                                                            className="h-8 w-8 flex-shrink-0 rounded-full bg-slate-300 dark:bg-slate-600"/>
+                                                                                        <div className="flex-1">
+                                                                                            <p className="text-sm italic text-slate-400 dark:text-slate-500">
+                                                                                                This comment has been
+                                                                                                deleted
+                                                                                            </p>
+                                                                                        </div>
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <div
+                                                                                            className="h-8 w-8 flex-shrink-0 rounded-full bg-cover bg-center"
+                                                                                            style={{
+                                                                                                backgroundImage: childComment?.user?.profileImageUrl
+                                                                                                    ? `url(${childComment.user.profileImageUrl})`
+                                                                                                    : "url(https://picsum.photos/seed/user/60/60)"
+                                                                                            }}
+                                                                                        />
+                                                                                        <div className="flex-1">
+                                                                                            <div
+                                                                                                className="flex items-center gap-2 mb-1">
+                                                                                                <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                                                                                                    {childComment?.user?.username || 'Deleted User'}
+                                                                                                </p>
+                                                                                                {childComment.createdAt && (
+                                                                                                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                                                                                                        {formatDate(childComment.createdAt)}
+                                                                                                    </p>
+                                                                                                )}
+                                                                                            </div>
 
-                          {editingCommentId === childComment.id ? (
-                            <div className="mt-1 space-y-3">
+                                                                                            {editingCommentId === childComment.id ? (
+                                                                                                <div
+                                                                                                    className="mt-1 space-y-3">
                               <textarea
-                                className="form-textarea w-full rounded-lg border-slate-300 bg-slate-50 p-3 text-sm focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-primary"
-                                rows={3}
-                                value={editContent}
-                                onChange={(e) => setEditContent(e.target.value)}
-                                required
+                                  className="form-textarea w-full rounded-lg border-slate-300 bg-slate-50 p-3 text-sm focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-primary"
+                                  rows={3}
+                                  value={editContent}
+                                  onChange={(e) => setEditContent(e.target.value)}
+                                  required
                               />
-                              <div className="flex justify-end gap-2">
-                                <button
-                                  type="button"
-                                  onClick={handleCancelEdit}
-                                  className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleEditSubmit(childComment.id)}
-                                  disabled={submittingEdit}
-                                  className="text-sm text-primary hover:text-primary/80 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  {submittingEdit ? 'Saving...' : 'Edit'}
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            <>
-                              <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-wrap break-words">
-                                {childComment.content}
-                              </p>
-                              {user && user.userId === childComment?.user?.userId && (
-                                <div className="mt-2 flex items-center gap-4">
-                                  <button
-                                    onClick={() => handleStartEdit(childComment)}
-                                    className="text-sm text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary"
-                                  >
-                                    edit
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteComment(childComment.id)}
-                                    disabled={deletingCommentId === childComment.id}
-                                    className="text-sm text-slate-500 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                                  >
-                                    {deletingCommentId === childComment.id ? 'Deleting...' : 'delete'}
-                                  </button>
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </>
-      )}
-    </div>
-  ))}
-</div>
+                                                                                                    <div
+                                                                                                        className="flex justify-end gap-2">
+                                                                                                        <button
+                                                                                                            type="button"
+                                                                                                            onClick={handleCancelEdit}
+                                                                                                            className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+                                                                                                        >
+                                                                                                            Cancel
+                                                                                                        </button>
+                                                                                                        <button
+                                                                                                            type="button"
+                                                                                                            onClick={() => handleEditSubmit(childComment.id)}
+                                                                                                            disabled={submittingEdit}
+                                                                                                            className="text-sm text-primary hover:text-primary/80 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                                                        >
+                                                                                                            {submittingEdit ? 'Saving...' : 'Edit'}
+                                                                                                        </button>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            ) : (
+                                                                                                <>
+                                                                                                    <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-wrap break-words">
+                                                                                                        {childComment.content}
+                                                                                                    </p>
+                                                                                                    {user && user.userId === childComment?.user?.userId && (
+                                                                                                        <div
+                                                                                                            className="mt-2 flex items-center gap-4">
+                                                                                                            <button
+                                                                                                                onClick={() => handleStartEdit(childComment)}
+                                                                                                                className="text-sm text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary"
+                                                                                                            >
+                                                                                                                edit
+                                                                                                            </button>
+                                                                                                            <button
+                                                                                                                onClick={() => handleDeleteComment(childComment.id)}
+                                                                                                                disabled={deletingCommentId === childComment.id}
+                                                                                                                className="text-sm text-slate-500 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                                                            >
+                                                                                                                {deletingCommentId === childComment.id ? 'Deleting...' : 'delete'}
+                                                                                                            </button>
+                                                                                                        </div>
+                                                                                                    )}
+                                                                                                </>
+                                                                                            )}
+                                                                                        </div>
+                                                                                    </>
+                                                                                )}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </section>
                                 )}
                             </div>
@@ -952,23 +990,28 @@ export default function IdeaDetailPage() {
                                 </h1>
 
                                 <div className="flex flex-col gap-3">
-                                    {similarIdeas.map((similarIdea) => (
-                                        <Link
-                                            key={similarIdea.id}
-                                            href={`/ideas/${similarIdea.id}`}
-                                            className="block rounded-lg border border-slate-100 bg-slate-50 px-4 py-3
-                   text-slate-800 shadow-sm transition-all duration-200
-                   hover:bg-slate-100 hover:shadow-md dark:border-slate-700
-                   dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
-                                        >
-                                            <h2 className="font-semibold text-base">{similarIdea.title}</h2>
-                                            {similarIdea.summary && (
-                                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
-                                                    {similarIdea.summary}
-                                                </p>
-                                            )}
-                                        </Link>
-                                    ))}
+                                    {similarIdeas === null || similarIdeas.length === 0 ?
+                                        <span>No Similar Ideas Found!</span>
+                                        :
+                                        similarIdeas.map((similarIdea) => (
+                                            <Link
+                                                key={similarIdea.id}
+                                                href={`/ideas/${similarIdea.id}`}
+                                                className="block rounded-lg border border-slate-100 bg-slate-50 px-4 py-3
+               text-slate-800 shadow-sm transition-all duration-200
+               hover:bg-slate-100 hover:shadow-md dark:border-slate-700
+               dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+                                            >
+                                                <h2 className="font-semibold text-base">{similarIdea.title}</h2>
+                                                {similarIdea.summary && (
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
+                                                        {similarIdea.summary}
+                                                    </p>
+                                                )}
+                                            </Link>
+                                        ))
+                                    }
+
                                 </div>
                             </section>
 
